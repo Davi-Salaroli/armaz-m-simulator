@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Parcelamento - Armazém</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .logo {
+            height: 60px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-text {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        
+        .logo-text .normal {
+            color: white;
+        }
+        
+        .logo-text .raio {
+            color: #FFD700;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            color: #FFD700;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #FFD700;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            color: #333;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .grid-2 .input-group {
+            margin-bottom: 0;
+        }
+        
+        .parcelas-section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .parcelas-section h4 {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .parcelas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .parcela-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .parcela-item input {
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            color: #333;
+            transition: border-color 0.3s;
+        }
+        
+        .parcela-item input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+        
+        .parcela-item button {
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #ff6b6b;
+            border-radius: 8px;
+            background: transparent;
+            color: #ff6b6b;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .parcela-item button:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .add-opcao {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #FFD700;
+            border-radius: 8px;
+            background: transparent;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-opcao:hover {
+            background: #FFD700;
+            color: #1a1a1a;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+            color: #1a1a1a;
+            border: 2px solid #FFD700;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-clear {
+            background: #f8f9fa;
+            color: #1a1a1a;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-clear:hover {
+            background: #e9ecef;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .result-section.show {
+            display: block;
+        }
+        
+        .whatsapp-preview {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #FFD700;
+        }
+        
+        .whatsapp-message {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #333;
+            overflow-x: auto;
+        }
+        
+        .copy-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .copy-btn {
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #FFD700;
+            border-radius: 8px;
+            background: transparent;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #FFD700;
+            color: #1a1a1a;
+        }
+        
+        .copy-feedback {
+            font-size: 14px;
+            color: #28a745;
+            font-weight: 600;
+            text-align: center;
+            min-height: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .comparativo {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        .comparativo h4 {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .comparativo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .comparativo-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #FFD700;
+        }
+        
+        .comparativo-item p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .comparativo-item strong {
+            display: block;
+            font-size: 18px;
+            color: #FFD700;
+            margin-top: 8px;
+            font-weight: 700;
+        }
+        
+        .info-box {
+            background: white;
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #666;
+            display: none;
+        }
+        
+        .info-box.show {
+            display: block;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            border-top: 2px solid #FFD700;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .footer strong {
+            color: #FFD700;
+        }
+        
+        @media (max-width: 600px) {
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                height: 50px;
+            }
+            
+            .logo-text {
+                font-size: 24px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .input-section {
+                padding: 20px;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .copy-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparativo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-text">
+                    <span class="normal">arma</span><span class="raio">⚡</span><span class="normal">ém</span>
+                </div>
+            </div>
+            <h1>Simulador de Parcelamento</h1>
+            <p>Calcule as parcelas e compartilhe com seus clientes</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="valorBike">Valor da bike (R$)</label>
+                    <input type="number" id="valorBike" placeholder="Ex: 6890.00" value="6890" step="0.01" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label for="nomeModelo">Nome do modelo</label>
+                    <input type="text" id="nomeModelo" placeholder="Ex: V9 MAX" value="V9 MAX">
+                </div>
+                
+                <div class="input-group">
+                    <label for="entrada">Entrada em PIX (R$) - deixe 0 se sem entrada</label>
+                    <input type="number" id="entrada" placeholder="Ex: 2500" value="0" step="100" min="0">
+                </div>
+                
+                <div class="parcelas-section">
+                    <h4>Opções de parcelamento</h4>
+                    <div class="parcelas-list" id="parcelasList">
+                        <div class="parcela-item">
+                            <input type="number" class="parcela-input" placeholder="Ex: 12" value="12" min="1" max="24" step="1">
+                            <button type="button" onclick="removerParcela(this)">Remover</button>
+                        </div>
+                        <div class="parcela-item">
+                            <input type="number" class="parcela-input" placeholder="Ex: 18" value="18" min="1" max="24" step="1">
+                            <button type="button" onclick="removerParcela(this)">Remover</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-opcao" onclick="adicionarParcela()">+ Adicionar opção de parcelamento</button>
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="gerarSimulacao()" class="btn btn-generate">Gerar Simulação</button>
+                    <button onclick="limparCampos()" class="btn btn-clear">Limpar Campos</button>
+                </div>
+            </div>
+            
+            <div class="result-section" id="resultSection">
+                <div class="whatsapp-preview">
+                    <div class="whatsapp-message" id="whatsappMessage"></div>
+                </div>
+                
+                <div class="copy-section">
+                    <button class="copy-btn" onclick="copiarParaClipboard()">📋 Copiar Mensagem</button>
+                    <button class="copy-btn" onclick="copiarComEnumerado()">📋 Copiar com Números</button>
+                </div>
+                <div class="copy-feedback" id="feedback"></div>
+                
+                <div class="comparativo">
+                    <h4>Resumo comparativo</h4>
+                    <div id="infoEntrada" class="info-box"></div>
+                    <div class="comparativo-grid" id="comparativoGrid"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Simulador de Parcelamento © 2024 - <strong>Armazém</strong> Bikes</p>
+        </div>
+    </div>
+
+    <script>
+        const TAXAS = {
+            2: 0.0573,
+            3: 0.0653,
+            4: 0.0734,
+            5: 0.0817,
+            6: 0.0900,
+            7: 0.0905,
+            8: 0.0991,
+            9: 0.1078,
+            10: 0.1167,
+            11: 0.1257,
+            12: 0.1348,
+            13: 0.1441,
+            14: 0.1535,
+            15: 0.1631,
+            16: 0.1728,
+            17: 0.1827,
+            18: 0.1929
+        };
+        
+        function formatCurrency(value) {
+            return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        
+        function calcularParcela(valorAFinanciar, numParcelas) {
+            const taxa = TAXAS[numParcelas] || 0;
+            const totalComTaxa = valorAFinanciar * (1 + taxa);
+            const parcela = totalComTaxa / numParcelas;
+            const juros = valorAFinanciar * taxa;
+            
+            return { parcela, juros, totalComTaxa };
+        }
+        
+        function adicionarParcela() {
+            const parcelasList = document.getElementById('parcelasList');
+            const novaDiv = document.createElement('div');
+            novaDiv.className = 'parcela-item';
+            novaDiv.innerHTML = `
+                <input type="number" class="parcela-input" placeholder="Ex: 24" min="1" max="24" step="1">
+                <button type="button" onclick="removerParcela(this)">Remover</button>
+            `;
+            parcelasList.appendChild(novaDiv);
+        }
+        
+        function removerParcela(button) {
+            const parcelasList = document.getElementById('parcelasList');
+            if (parcelasList.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                alert('Você precisa ter pelo menos uma opção de parcelamento!');
+            }
+        }
+        
+        function gerarSimulacao() {
+            const valorBike = parseFloat(document.getElementById('valorBike').value);
+            const nomeModelo = document.getElementById('nomeModelo').value || 'BIKE';
+            const entrada = parseFloat(document.getElementById('entrada').value) || 0;
+            
+            const parcelasInputs = document.querySelectorAll('.parcela-input');
+            const parcelas = Array.from(parcelasInputs).map(input => parseInt(input.value)).filter(p => p > 0);
+            
+            if (!valorBike || parcelas.length === 0) {
+                alert('Preencha o valor da bike e adicione pelo menos uma opção de parcelamento!');
+                return;
+            }
+            
+            const saldoAFinanciar = valorBike - entrada;
+            
+            if (saldoAFinanciar <= 0) {
+                alert('A entrada não pode ser maior ou igual ao valor da bike!');
+                return;
+            }
+            
+            parcelas.sort((a, b) => a - b);
+            
+            let mensagem = `🚴 ${nomeModelo} - Simulação de Parcelamento\n\nValor: ${formatCurrency(valorBike)}`;
+            
+            if (entrada > 0) {
+                mensagem += `\nEntrada (PIX): ${formatCurrency(entrada)}`;
+                mensagem += `\nSaldo a financiar: ${formatCurrency(saldoAFinanciar)}`;
+            }
+            
+            mensagem += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            
+            parcelas.forEach((p, index) => {
+                const result = calcularParcela(saldoAFinanciar, p);
+                mensagem += `📊 OPÇÃO ${index + 1}: ${p} PARCELAS\n💰 ${formatCurrency(result.parcela)}/mês\n(Taxa: +${formatCurrency(result.juros)})\n\n`;
+            });
+            
+            mensagem += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nQual parcela se encaixa melhor no seu orçamento? \n\nTemos a ${nomeModelo} pronta pra você! 🎯\n\n⚡ Armazém Bikes`;
+            
+            document.getElementById('whatsappMessage').textContent = mensagem;
+            document.getElementById('resultSection').classList.add('show');
+            
+            const infoEntrada = document.getElementById('infoEntrada');
+            if (entrada > 0) {
+                infoEntrada.innerHTML = `<strong>Entrada:</strong> ${formatCurrency(entrada)} | <strong>Saldo:</strong> ${formatCurrency(saldoAFinanciar)}`;
+                infoEntrada.classList.add('show');
+            } else {
+                infoEntrada.classList.remove('show');
+            }
+            
+            const comparativoGrid = document.getElementById('comparativoGrid');
+            comparativoGrid.innerHTML = '';
+            
+            parcelas.forEach((p, index) => {
+                const result = calcularParcela(saldoAFinanciar, p);
+                const item = document.createElement('div');
+                item.className = 'comparativo-item';
+                item.innerHTML = `
+                    <p>OPÇÃO ${index + 1}</p>
+                    <strong>${p}x</strong>
+                    <strong style="color: #FFD700; font-size: 16px; margin-top: 4px;">${formatCurrency(result.parcela)}</strong>
+                    <p style="margin-top: 8px; font-size: 11px; color: #999;">Taxa: +${formatCurrency(result.juros)}</p>
+                `;
+                comparativoGrid.appendChild(item);
+            });
+        }
+        
+        function copiarParaClipboard() {
+            const texto = document.getElementById('whatsappMessage').textContent;
+            navigator.clipboard.writeText(texto).then(() => {
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = '✓ Copiado com sucesso! Cole no WhatsApp agora.';
+                setTimeout(() => { feedback.textContent = ''; }, 3000);
+            }).catch(() => {
+                alert('Erro ao copiar. Tente novamente.');
+            });
+        }
+        
+        function copiarComEnumerado() {
+            const texto = document.getElementById('whatsappMessage').textContent;
+            const linhas = texto.split('\n');
+            const textoEnumerado = linhas.map((linha, i) => `${i + 1}. ${linha}`).join('\n');
+            navigator.clipboard.writeText(textoEnumerado).then(() => {
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = '✓ Copiado com números! Cole no WhatsApp agora.';
+                setTimeout(() => { feedback.textContent = ''; }, 3000);
+            }).catch(() => {
+                alert('Erro ao copiar. Tente novamente.');
+            });
+        }
+        
+        function limparCampos() {
+            document.getElementById('valorBike').value = '';
+            document.getElementById('nomeModelo').value = '';
+            document.getElementById('entrada').value = '0';
+            
+            const parcelasList = document.getElementById('parcelasList');
+            parcelasList.innerHTML = `
+                <div class="parcela-item">
+                    <input type="number" class="parcela-input" placeholder="Ex: 12" value="12" min="1" max="24" step="1">
+                    <button type="button" onclick="removerParcela(this)">Remover</button>
+                </div>
+                <div class="parcela-item">
+                    <input type="number" class="parcela-input" placeholder="Ex: 18" value="18" min="1" max="24" step="1">
+                    <button type="button" onclick="removerParcela(this)">Remover</button>
+                </div>
+            `;
+            
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('feedback').textContent = '';
+        }
+    </script>
+</body>
+</html>
